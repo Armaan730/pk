@@ -13,5 +13,4 @@
 # limitations under the License.
 
 PRODUCT_MAKEFILES := \
-    $(LOCAL_DIR)/hentai_cepheus.mk \
     $(LOCAL_DIR)/hentai_raphael.mk
