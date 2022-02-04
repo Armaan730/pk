@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import hashlib
 import common
 
 def FullOTA_InstallEnd(info):
@@ -25,13 +24,10 @@ def IncrementalOTA_InstallEnd(info):
   return
 
 def AddImage(info, basename, dest):
-  path = "IMAGES/" + basename
-  if path not in info.input_zip.namelist():
-    return
-
-  data = info.input_zip.read(path)
-  common.ZipWriteStr(info.output_zip, basename, data)
-  info.script.AppendExtra('package_extract_file("%s", "%s");' % (basename, dest))
+  name = basename
+  data = info.input_zip.read("IMAGES/" + basename)
+  common.ZipWriteStr(info.output_zip, name, data)
+  info.script.AppendExtra('package_extract_file("%s", "%s");' % (name, dest))
 
 def OTA_InstallEnd(info):
   info.script.Print("Patching firmware images...")
