@@ -9,7 +9,7 @@
 
 set -e
 
-DEVICE_COMMON=msmnile-common
+DEVICE=raphael
 VENDOR=xiaomi
 
 # Load extract_utils and do some sanity checks
@@ -18,7 +18,7 @@ if [[ ! -d "${MY_DIR}" ]]; then MY_DIR="${PWD}"; fi
 
 ANDROID_ROOT="${MY_DIR}/../../.."
 
-HELPER="${ANDROID_ROOT}/vendor/hentai/build/tools/extract_utils.sh"
+HELPER="${ANDROID_ROOT}/tools/extract-utils/extract_utils.sh"
 if [ ! -f "${HELPER}" ]; then
     echo "Unable to find helper script at ${HELPER}"
     exit 1
@@ -29,24 +29,9 @@ source "${HELPER}"
 setup_vendor "${DEVICE_COMMON}" "${VENDOR}" "${ANDROID_ROOT}" true
 
 # Warning headers and guards
-write_headers "raphael"
+write_headers
 
-write_makefiles "${MY_DIR}/proprietary-files-coral.txt" true
 write_makefiles "${MY_DIR}/proprietary-files.txt" true
 
 # Finish
 write_footers
-
-if [ ! -z "${DEVICE}" ] && [ -s "${MY_DIR}/${DEVICE}/proprietary-files.txt" ]; then
-    # Reinitialize the helper for device
-    setup_vendor "${DEVICE}" "${VENDOR}" "${ANDROID_ROOT}" false
-
-    # Copyright headers and guards
-    write_headers
-
-    # The standard device blobs
-    write_makefiles "${MY_DIR}/${DEVICE}/proprietary-files.txt" true
-
-    # Finish
-    write_footers
-fi
