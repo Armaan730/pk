@@ -19,8 +19,8 @@
 #include "FingerprintInscreen.h"
 
 #include <android-base/logging.h>
-#include <cmath>
 #include <fstream>
+#include <cmath>
 #include <thread>
 
 #include <fcntl.h>
@@ -36,10 +36,6 @@
 #define FOD_STATUS_PATH "/sys/devices/virtual/touch/tp_dev/fod_status"
 #define FOD_STATUS_ON 1
 #define FOD_STATUS_OFF 0
-
-#define DIM_LAYER_HBM_PATH "/sys/devices/platform/soc/soc:qcom,dsi-display-primary/dimlayer_hbm"
-#define DIM_LAYER_HBM_ON 1
-#define DIM_LAYER_HBM_OFF 0
 
 #define FOD_UI_PATH "/sys/devices/platform/soc/soc:qcom,dsi-display-primary/fod_ui"
 
@@ -74,10 +70,10 @@ static bool readBool(int fd) {
     return c != '0';
 }
 
-}  // anonymous namespace
+} // anonymous namespace
 
 namespace vendor {
-namespace hentai {
+namespace lineage {
 namespace biometrics {
 namespace fingerprint {
 namespace inscreen {
@@ -95,9 +91,9 @@ FingerprintInscreen::FingerprintInscreen() {
         }
 
         struct pollfd fodUiPoll = {
-                .fd = fd,
-                .events = POLLERR | POLLPRI,
-                .revents = 0,
+            .fd = fd,
+            .events = POLLERR | POLLPRI,
+            .revents = 0,
         };
 
         while (true) {
@@ -108,7 +104,7 @@ FingerprintInscreen::FingerprintInscreen() {
             }
 
             xiaomiFingerprintService->extCmd(COMMAND_NIT,
-                                             readBool(fd) ? PARAM_NIT_FOD : PARAM_NIT_NONE);
+                    readBool(fd) ? PARAM_NIT_FOD : PARAM_NIT_NONE);
         }
     }).detach();
 }
@@ -143,13 +139,11 @@ Return<void> FingerprintInscreen::onRelease() {
 
 Return<void> FingerprintInscreen::onShowFODView() {
     set(FOD_STATUS_PATH, FOD_STATUS_ON);
-    set(DIM_LAYER_HBM_PATH, DIM_LAYER_HBM_ON);
     return Void();
 }
 
 Return<void> FingerprintInscreen::onHideFODView() {
     set(FOD_STATUS_PATH, FOD_STATUS_OFF);
-    set(DIM_LAYER_HBM_PATH, DIM_LAYER_HBM_OFF);
     return Void();
 }
 
@@ -160,7 +154,7 @@ Return<bool> FingerprintInscreen::handleAcquired(int32_t acquiredInfo, int32_t v
     }
 
     if (acquiredInfo == FINGERPRINT_ACQUIRED_VENDOR) {
-        if (vendorCode == 22) {
+        if (vendorCode == 0) {
             Return<void> ret = mCallback->onFingerDown();
             if (!ret.isOk()) {
                 LOG(ERROR) << "FingerDown() error: " << ret.description();
@@ -168,7 +162,7 @@ Return<bool> FingerprintInscreen::handleAcquired(int32_t acquiredInfo, int32_t v
             return true;
         }
 
-        if (vendorCode == 23) {
+        if (vendorCode == 1) {
             Return<void> ret = mCallback->onFingerUp();
             if (!ret.isOk()) {
                 LOG(ERROR) << "FingerUp() error: " << ret.description();
@@ -211,5 +205,5 @@ Return<void> FingerprintInscreen::setCallback(const sp<IFingerprintInscreenCallb
 }  // namespace inscreen
 }  // namespace fingerprint
 }  // namespace biometrics
-}  // namespace hentai
+}  // namespace lineage
 }  // namespace vendor
